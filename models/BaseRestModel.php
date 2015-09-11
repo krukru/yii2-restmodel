@@ -6,6 +6,7 @@ use app\extensions\restmodel\data\DataAccessInterface;
 use yii\base\Exception;
 use yii\base\Model;
 use yii\helpers\Json;
+use yii\web\Response;
 
 abstract class BaseRestModel extends Model implements DataAccessInterface
 {
@@ -45,7 +46,7 @@ abstract class BaseRestModel extends Model implements DataAccessInterface
             $url = $this->createUrl($this->baseUrl(), $endpoint->path);
             $requestBody = $this->serialize();
             $response = $this->request($endpoint->method, $url, $requestBody);
-            return $response->statusCodeOk();
+            return $response->isSuccessful;
         } else {
             return false;
         }
@@ -76,11 +77,19 @@ abstract class BaseRestModel extends Model implements DataAccessInterface
         return $json;
     }
 
+    /**
+     * @param      $method
+     * @param      $url
+     * @param null $body
+     *
+     * @returns Response
+     */
     private function request($method, $url, $body = null)
     {
-        dump(sprintf('Request Method: %s', $method));
-        dump(sprintf('Request Url: %s', $url));
-        dump(sprintf('Request Body: %s', $body));
+        dump(sprintf('Request Method: %s%sRequest Url: %s%sRequest Body: %s', $method, PHP_EOL, $url, PHP_EOL, $body));
+        $fakeResponse = new Response();
+        $fakeResponse->statusCode = 200;
+        return $fakeResponse;
     }
 
     public function update($runValidation = true, $attributeNames = null)
@@ -95,7 +104,7 @@ abstract class BaseRestModel extends Model implements DataAccessInterface
             $url = $this->createUrl($this->baseUrl(), $endpoint->path);
             $requestBody = $this->serialize();
             $response = $this->request($endpoint->method, $url, $requestBody);
-            return $response->statusCodeOk();
+            return $response->isSuccessful;
         } else {
             return false;
         }
@@ -107,7 +116,8 @@ abstract class BaseRestModel extends Model implements DataAccessInterface
     {
         $endpoint = $this->deleteEndpoint();
         $url = $this->createUrl($this->baseUrl(), $endpoint->path);
-        $this->request($endpoint->method, $url);
+        $response = $this->request($endpoint->method, $url);
+        return $response->isSuccessful;
     }
 
     protected abstract function deleteEndpoint();
