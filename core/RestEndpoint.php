@@ -1,11 +1,32 @@
 <?php
 
-class RestEndpoint {
-	
-	//getter setter za method i endpoint
-	
+namespace app\extensions\restmodel\core;
+
+use yii\base\Object;
+
+/**
+ * Class RestEndpoint
+ *
+ * @property string $method
+ * @property string $path
+ * @package app\extensions\restmodel\core
+ */
+class RestEndpoint extends Object {
+
+	private $method;
+	private $path;
+
 	public function __construct($method, $path) {
-		//set them vars
+		$this->method = $method;
+		$this->path = $path;
 	}
-	
+
+	public function getMethod() {
+		return $this->method;
+	}
+
+	public function getPath() {
+		return $this->path;
+	}
+
 }

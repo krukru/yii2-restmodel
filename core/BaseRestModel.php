@@ -1,73 +1,94 @@
 <?php
 
+namespace app\extensions\restmodel\core;
+
+use yii\base\Exception;
+use yii\base\Model;
+use yii\helpers\Json;
+
 abstract class BaseRestModel extends Model implements DataAccessInterface {
-	
+
 	//trebaju nam eventi i nešto što će vodit računa o dirty parametrima (možda)
 	//svakako treba nešto što će znat da li je model new record ili je učitani record
-	
-	/**
-	* The base url for your api
-	* @return string
-	*/
-	public abstract function baseUrl();
-	
+
 	public function save($runValidation = true, $attributeNames = null) {
 		if ($this->isNewRecord()) {
-			$this->insert(runValidation, attributeNames);
+			$this->insert($runValidation, $attributeNames);
 		}
 		else {
-			$this->update(runValidation, attributeNames);
+			$this->update($runValidation, $attributeNames);
 		}
 	}
-	
+
+	/**
+	 * Not yet implemented
+	 * @return bool
+	 */
+	private function isNewRecord() {
+		return true;
+	}
+
 	public function insert($runValidation = true, $attributeNames = null) {
 		$endpoint = $this->insertEndpoint();
 		$url = $this->createUrl($this->baseUrl(), $endpoint->path);
 		$requestBody = $this->serialize();
-		$http->request($endpoint->method, $url, $requestBody);
+		$this->request($endpoint->method, $url, $requestBody);
 	}
-	
+
+	protected abstract function insertEndpoint();
+
+	private function createUrl($baseUrl, $path) {
+		$url = sprintf('%s/%s', rtrim($baseUrl, '/'), ltrim($path, '/'));
+		return $url;
+	}
+
+	/**
+	 * The base url for your api
+	 *
+	 * @return string
+	 */
+	public abstract function baseUrl();
+
+	/**
+	 * @todo implement strategy, jsonSerializer, xmlSerializer, itd
+	 */
+	private function serialize() {
+		$attributes = $this->getAttributes();
+		$json = Json::encode($attributes);
+		return $json;
+	}
+
+	private function request($method, $url, $body = null) {
+		dump(sprintf('Request Method: %s', $method));
+		dump(sprintf('Request Url: %s', $url));
+		dump(sprintf('Request Body: %s', $body));
+	}
+
 	public function update($runValidation = true, $attributeNames = null) {
-		$endpoint = $this->updatetEndpoint();
+		$endpoint = $this->updateEndpoint();
 		$url = $this->createUrl($this->baseUrl(), $endpoint->path);
-		$requestBody = $this->serialize(); //vidimo pattern ponavljanja - izvuci u metodu
-		$http->request($endpoint->method, $url, $requestBody);
-	}	
-	
+		$requestBody = $this->serialize();
+		$this->request($endpoint->method, $url, $requestBody);
+	}
+
 	public function delete() {
 		if ($this->isNewRecord()) {
 			//vidi kako yii hendla ovo? isto i za update/insert - dal baciš exception ili svejedno probaš okinut brisanje itd ili samo ako je definiran $id odnosno deleteEndpoint
 		}
 		$endpoint = $this->deleteEndpoint();
 		$url = $this->createUrl($this->baseUrl(), $endpoint->path);
-		$http->request($endpoint->method, $url, $requestBody);
-	}		
-		
-	public function findOne($condition) {
+		$this->request($endpoint->method, $url);
+	}
+
+	protected abstract function deleteEndpoint();
+
+	public function findOne($condition = null) {
 		return $this->find($condition)->one();
 	}
-	
-	public function findAll($condition) {
+
+	public function findAll($condition = null) {
 		return $this->find($condition)->all();
 	}
-	
-	private function isNewRecord() {
-		throw new Exception('Not yet implemented');
-	}
-	
-	private function createUrl($baseUrl, $path) {
-		$url = $baseUrl + $path //ali pazi ako u base path fali trailing slash
-		return $url;
-	}
-	
-	protected abstract function insertEndpoint();
+
 	protected abstract function updateEndpoint();
-	protected abstract function deleteEndpoint();
-	
-	
-	//todo implement strategy, jsonSerializer, xmlSerializer, itd
-	private function serialize() {
-		$attributes = $this->getAttributes();
-		$json = Json::encode($attributes);
-	}
 }
