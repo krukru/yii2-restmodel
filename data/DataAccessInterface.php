@@ -1,106 +1,54 @@
 <?php
 
-namespace app\extensions\restmodel\models;
+namespace app\extensions\restmodel\data;
 
-use app\extensions\restmodel\data\DataAccessInterface;
-use yii\base\Exception;
-use yii\base\Model;
-use yii\helpers\Json;
+use app\extensions\restmodel\models\BaseRestModel;
+use yii\db\QueryInterface;
 
-abstract class BaseRestModel extends Model implements DataAccessInterface
+interface DataAccessInterface
 {
 
-    //trebaju nam eventi i nešto što će vodit računa o dirty parametrima (možda)
-    //svakako treba nešto što će znat da li je model new record ili je učitani record
-
-    public function save($runValidation = true, $attributeNames = null)
-    {
-        if ($this->isNewRecord()) {
-            $this->insert($runValidation, $attributeNames);
-        } else {
-            $this->update($runValidation, $attributeNames);
-        }
-    }
+    /**
+     * @return QueryInterface
+     */
+    public function find();
 
     /**
-     * Not yet implemented
+     * @return BaseRestModel
+     */
+    public function findOne();
+
+    /**
+     * @return BaseRestModel
+     */
+    public function findAll();
+
+    /**
+     * @param bool|true $runValidation
+     * @param null      $attributeNames
      *
      * @return bool
      */
-    private function isNewRecord()
-    {
-        return true;
-    }
-
-    public function insert($runValidation = true, $attributeNames = null)
-    {
-        $endpoint = $this->insertEndpoint();
-        $url = $this->createUrl($this->baseUrl(), $endpoint->path);
-        $requestBody = $this->serialize();
-        $this->request($endpoint->method, $url, $requestBody);
-    }
-
-    protected abstract function insertEndpoint();
-
-    private function createUrl($baseUrl, $path)
-    {
-        $url = sprintf('%s/%s', rtrim($baseUrl, '/'), ltrim($path, '/'));
-        return $url;
-    }
+    public function save($runValidation = true, $attributeNames = null);
 
     /**
-     * The base url for your api
+     * @param bool|true $runValidation
+     * @param null      $attributeNames
      *
-     * @return string
+     * @return bool
      */
-    public abstract function baseUrl();
+    public function insert($runValidation = true, $attributeNames = null);
 
     /**
-     * @todo implement strategy, jsonSerializer, xmlSerializer, itd
+     * @param bool|true $runValidation
+     * @param null      $attributeNames
+     *
+     * @return bool
      */
-    private function serialize()
-    {
-        $attributes = $this->getAttributes();
-        $json = Json::encode($attributes);
-        return $json;
-    }
+    public function update($runValidation = true, $attributeNames = null);
 
-    private function request($method, $url, $body = null)
-    {
-        dump(sprintf('Request Method: %s', $method));
-        dump(sprintf('Request Url: %s', $url));
-        dump(sprintf('Request Body: %s', $body));
-    }
-
-    public function update($runValidation = true, $attributeNames = null)
-    {
-        $endpoint = $this->updateEndpoint();
-        $url = $this->createUrl($this->baseUrl(), $endpoint->path);
-        $requestBody = $this->serialize();
-        $this->request($endpoint->method, $url, $requestBody);
-    }
-
-    protected abstract function updateEndpoint();
-
-    public function delete()
-    {
-        if ($this->isNewRecord()) {
-            //vidi kako yii hendla ovo? isto i za update/insert - dal baciš exception ili svejedno probaš okinut brisanje itd ili samo ako je definiran $id odnosno deleteEndpoint
-        }
-        $endpoint = $this->deleteEndpoint();
-        $url = $this->createUrl($this->baseUrl(), $endpoint->path);
-        $this->request($endpoint->method, $url);
-    }
-
-    protected abstract function deleteEndpoint();
-
-    public function findOne($condition = null)
-    {
-        return $this->find($condition)->one();
-    }
-
-    public function findAll($condition = null)
-    {
-        return $this->find($condition)->all();
-    }
+    /**
+     * @return bool
+     */
+    public function delete();
 }
