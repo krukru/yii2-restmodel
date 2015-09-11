@@ -19,15 +19,10 @@ use app\models\UserRestModel;
 class BaseUserRestModel extends BaseEgnyteRestModel
 {
 
-    /**
-     * Here we define the model attributes
-     *
-     * @return array
-     */
-    public function attributes()
-    {
-        return array('id', 'firstname', 'lastname', 'email');
-    }
+    public $id;
+    public $firstname;
+    public $lastname;
+    public $email;
 
     /**
      *
