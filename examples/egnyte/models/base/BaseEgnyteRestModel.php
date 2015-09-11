@@ -1,8 +1,8 @@
 <?php
 
-namespace app\extensions\restmodel\examples\egnyte;
+namespace app\models\base;
 
-use app\extensions\restmodel\core\BaseRestModel;
+use app\extensions\restmodel\models\BaseRestModel;
 
 abstract class BaseEgnyteRestModel extends BaseRestModel {
 

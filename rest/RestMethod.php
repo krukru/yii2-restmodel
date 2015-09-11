@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\extensions\restmodel\core;
+namespace app\extensions\restmodel\rest;
 
 
 final class RestMethod {
