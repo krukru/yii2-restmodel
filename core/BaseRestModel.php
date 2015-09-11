@@ -36,7 +36,7 @@ abstract class BaseRestModel extends Model implements DataAccessInterface {
 	
 	public function delete() {
 		if ($this->isNewRecord()) {
-			//vidi kako yii hendla ovo? isto i za update/insert
+			//vidi kako yii hendla ovo? isto i za update/insert - dal baciš exception ili svejedno probaš okinut brisanje itd ili samo ako je definiran $id odnosno deleteEndpoint
 		}
 		$endpoint = $this->deleteEndpoint();
 		$url = $this->createUrl($this->baseUrl(), $endpoint->path);

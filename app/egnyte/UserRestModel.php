@@ -2,6 +2,8 @@
 
 class UserRestModel extends BaseProjectARestModel {
 	
+	//čitava ova klasa bi mogla bit BaseUserRestModel
+	
 	public $id; #pk, bigint
 	public $username; #required, string
 	public $email; #required, string
