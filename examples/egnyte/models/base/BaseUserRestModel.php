@@ -16,40 +16,47 @@ use app\models\UserRestModel;
  *
  * @package app\extensions\restmodel\examples\egnyte
  */
-class BaseUserRestModel extends BaseEgnyteRestModel {
+class BaseUserRestModel extends BaseEgnyteRestModel
+{
 
-	/**
-	 * Here we define the model attributes
-	 *
-	 * @return array
-	 */
-	public function attributes() {
-		return array('id', 'firstname', 'lastname', 'email');
-	}
+    /**
+     * Here we define the model attributes
+     *
+     * @return array
+     */
+    public function attributes()
+    {
+        return array('id', 'firstname', 'lastname', 'email');
+    }
 
-	/**
-	 *
-	 * Here we define the model rules
-	 *
-	 * @return array
-	 */
-	public function rules() {
-		return array();
-	}
+    /**
+     *
+     * Here we define the model rules
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return array();
+    }
 
-	public function find() {
-		return new UserRestModel();
-	}
+    public function find()
+    {
+        return new UserRestModel();
+    }
 
-	protected function deleteEndpoint() {
-		return new RestEndpoint(RestMethod::DELETE, sprintf('/pubapi/v2/users/%s', $this->id));
-	}
+    protected function deleteEndpoint()
+    {
+        return new RestEndpoint(RestMethod::DELETE, sprintf('/pubapi/v2/users/%s', $this->id));
+    }
 
-	protected function insertEndpoint() {
-		return new RestEndpoint(RestMethod::POST, '/pubapi/v2/users');
-	}
+    protected function insertEndpoint()
+    {
+        return new RestEndpoint(RestMethod::POST, '/pubapi/v2/users');
+    }
 
-	protected function updateEndpoint() {
-		return new RestEndpoint(RestMethod::PATCH, sprintf('/pubapi/v2/users/%s', $this->id));
-	}
+    protected function updateEndpoint()
+    {
+        return new RestEndpoint(RestMethod::PATCH, sprintf('/pubapi/v2/users/%s', $this->id));
+    }
 }
